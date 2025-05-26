@@ -1,0 +1,8 @@
+name: enterprise_mobile_app_workspace
+description: Workspace root for enterprise mobile app
+
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+
+dev_dependencies:
+  melos: ^6.1.0

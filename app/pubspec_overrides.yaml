@@ -1,0 +1,8 @@
+# melos_managed_dependency_overrides: core,design_system,user_management
+dependency_overrides:
+  core:
+    path: ..\\packages\\core
+  design_system:
+    path: ..\\packages\\design_system
+  user_management:
+    path: ..\\packages\\features\\user_management

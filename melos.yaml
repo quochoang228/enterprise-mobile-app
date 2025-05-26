@@ -1,0 +1,83 @@
+name: enterprise_mobile_app
+
+packages:
+  - packages/**
+  - app
+
+command:
+  version:
+    workspaceChangelog: true
+
+scripts:
+  analyze:
+    run: dart analyze --fatal-infos
+    exec:
+      concurrency: 1
+
+  test:
+    run: flutter test
+    exec:
+      concurrency: 1
+
+  test:coverage:
+    run: flutter test --coverage
+    exec:
+      concurrency: 1
+
+  build_runner:
+    run: dart run build_runner build --delete-conflicting-outputs
+    exec:
+      concurrency: 1
+
+  clean:
+    run: flutter clean
+    exec:
+      concurrency: 1
+
+  get:
+    run: flutter pub get
+    exec:
+      concurrency: 1
+
+  format:
+    run: dart format .
+    exec:
+      concurrency: 1
+
+  format:check:
+    run: dart format --set-exit-if-changed .
+    exec:
+      concurrency: 1
+
+  dependency:graph:
+    run: melos list --graph
+
+  dependency:outdated:
+    run: flutter pub outdated
+    exec:
+      concurrency: 1
+  metrics:
+    run: dart run dart_code_metrics:metrics analyze lib
+    exec:
+      concurrency: 1
+      failFast: true
+
+  generate:all:
+    run: |
+      melos get
+      melos run build_runner
+
+  ci:analyze:
+    run: |
+      melos get
+      melos run format:check
+      melos run analyze
+
+  ci:test:
+    run: |
+      melos get
+      melos run build_runner
+      melos run test:coverage
+
+dev_dependencies:
+  melos: ^6.1.0

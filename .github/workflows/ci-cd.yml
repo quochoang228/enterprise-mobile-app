@@ -1,0 +1,219 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  FLUTTER_VERSION: "3.32.0"
+  DART_VERSION: "3.8.0"
+
+jobs:
+  analyze:
+    name: 🔍 Analyze Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📚 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🎯 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+
+      - name: 📦 Setup Melos
+        run: |
+          dart pub global activate melos
+          dart pub global activate build_runner
+
+      - name: 📥 Get dependencies
+        run: melos get
+
+      - name: 🔧 Generate code
+        run: melos run build_runner
+
+      - name: 🔍 Analyze code
+        run: melos run analyze
+
+  test:
+    name: 🧪 Run Tests
+    runs-on: ubuntu-latest
+    needs: analyze
+    steps:
+      - name: 📚 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🎯 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+
+      - name: 📦 Setup Melos
+        run: |
+          dart pub global activate melos
+          dart pub global activate build_runner
+
+      - name: 📥 Get dependencies
+        run: melos get
+
+      - name: 🔧 Generate code
+        run: melos run build_runner
+
+      - name: 🧪 Run unit tests
+        run: melos run test
+
+      - name: 📊 Generate coverage
+        run: |
+          dart pub global activate coverage
+          melos run test:coverage
+          genhtml coverage/lcov.info -o coverage/html
+
+      - name: 📤 Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: coverage/lcov.info
+
+  build-android:
+    name: 🤖 Build Android
+    runs-on: ubuntu-latest
+    needs: test
+    strategy:
+      matrix:
+        environment: [staging, production]
+    steps:
+      - name: 📚 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🎯 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 📦 Setup Melos
+        run: |
+          dart pub global activate melos
+          dart pub global activate build_runner
+
+      - name: 📥 Get dependencies
+        run: melos get
+
+      - name: 🔧 Generate code
+        run: melos run build_runner
+
+      - name: 🔐 Setup signing key
+        run: |
+          echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 -d > app/android/key.jks
+        env:
+          ANDROID_SIGNING_KEY: ${{ secrets.ANDROID_SIGNING_KEY }}
+
+      - name: 🔨 Build APK
+        run: |
+          cd app
+          flutter build apk --release --dart-define=ENVIRONMENT=${{ matrix.environment }}
+
+      - name: 🔨 Build App Bundle
+        run: |
+          cd app
+          flutter build appbundle --release --dart-define=ENVIRONMENT=${{ matrix.environment }}
+
+      - name: 📤 Upload APK artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-${{ matrix.environment }}-release.apk
+          path: app/build/app/outputs/flutter-apk/app-release.apk
+
+      - name: 📤 Upload App Bundle artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-${{ matrix.environment }}-release.aab
+          path: app/build/app/outputs/bundle/release/app-release.aab
+
+  build-ios:
+    name: 🍎 Build iOS
+    runs-on: macos-latest
+    needs: test
+    strategy:
+      matrix:
+        environment: [staging, production]
+    steps:
+      - name: 📚 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🎯 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+
+      - name: 📦 Setup Melos
+        run: |
+          dart pub global activate melos
+          dart pub global activate build_runner
+
+      - name: 📥 Get dependencies
+        run: melos get
+
+      - name: 🔧 Generate code
+        run: melos run build_runner
+
+      - name: 🔨 Build iOS
+        run: |
+          cd app
+          flutter build ios --release --no-codesign --dart-define=ENVIRONMENT=${{ matrix.environment }}
+
+      - name: 📤 Upload iOS artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios-${{ matrix.environment }}-release
+          path: app/build/ios/iphoneos/Runner.app
+
+  deploy-staging:
+    name: 🚀 Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [build-android, build-ios]
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+    steps:
+      - name: 📥 Download Android APK
+        uses: actions/download-artifact@v3
+        with:
+          name: app-staging-release.apk
+
+      - name: 🚀 Deploy to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID_ANDROID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: testers
+          file: app-staging-release.apk
+
+  deploy-production:
+    name: 🚀 Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build-android, build-ios]
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    steps:
+      - name: 📥 Download Android App Bundle
+        uses: actions/download-artifact@v3
+        with:
+          name: app-production-release.aab
+
+      - name: 🚀 Deploy to Google Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
+          packageName: com.example.enterprise_mobile_app
+          releaseFiles: app-production-release.aab
+          track: production

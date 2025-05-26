@@ -1,0 +1,41 @@
+name: user_management
+description: User management feature for the enterprise mobile app
+version: 1.0.0+1
+publish_to: none
+
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Local packages
+  core:
+    path: ../../core
+  design_system:
+    path: ../../design_system
+  
+  # State Management
+  flutter_riverpod: ^2.3.4
+  
+  # Utilities
+  dartz: ^0.10.1
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.9.0
+  equatable: ^2.0.5
+  
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  
+  # Code generation
+  build_runner: ^2.4.7
+  freezed: ^2.5.7
+  json_serializable: ^6.8.0
+  
+  # Testing
+  mockito: ^5.4.4
+  mocktail: ^1.0.4
+  
+flutter:

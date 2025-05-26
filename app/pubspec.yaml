@@ -1,0 +1,56 @@
+name: enterprise_mobile_app
+description: An enterprise-grade mobile application built with Flutter
+version: 1.0.0+1
+publish_to: none
+
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Local packages
+  core:
+    path: ../packages/core
+  design_system:
+    path: ../packages/design_system
+  user_management:
+    path: ../packages/features/user_management
+  
+  # Navigation
+  go_router: ^14.2.7
+  
+  # State Management & DI
+  flutter_riverpod: ^2.3.4
+  get_it: ^8.0.0
+  injectable: ^2.5.0
+  
+  # Environment configuration
+  flutter_dotenv: ^5.1.0
+  
+  # Utils
+  dartz: ^0.10.1
+  
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  
+  # Code generation
+  build_runner: ^2.4.7
+  injectable_generator: ^2.6.2
+  
+  # Testing
+  integration_test:
+    sdk: flutter
+  mockito: ^5.4.4
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/icons/
+    - .env
