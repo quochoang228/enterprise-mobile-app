@@ -24,8 +24,7 @@ class UserProfilePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildUserProfile(BuildContext context, user) {
-    return SingleChildScrollView(
+  Widget _buildUserProfile(BuildContext context, user) => SingleChildScrollView(
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,10 +65,8 @@ class UserProfilePage extends ConsumerWidget {
         ],
       ),
     );
-  }
 
-  Widget _buildDetailCard(String label, String value) {
-    return Card(
+  Widget _buildDetailCard(String label, String value) => Card(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
@@ -90,10 +87,8 @@ class UserProfilePage extends ConsumerWidget {
         ),
       ),
     );
-  }
 
-  Widget _buildErrorState(BuildContext context, String error) {
-    return Center(
+  Widget _buildErrorState(BuildContext context, String error) => Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -118,5 +113,4 @@ class UserProfilePage extends ConsumerWidget {
         ],
       ),
     );
-  }
 }

@@ -12,6 +12,7 @@ export 'src/storage/cache_manager.dart';
 export 'src/storage/memory_manager.dart';
 export 'src/storage/secure_storage.dart';
 export 'src/storage/local_database.dart';
+export 'src/storage/storage_service.dart';
 
 // Auth
 export 'src/auth/auth_repository.dart';

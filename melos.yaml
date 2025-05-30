@@ -79,5 +79,5 @@ scripts:
       melos run build_runner
       melos run test:coverage
 
-dev_dependencies:
-  melos: ^6.1.0
+# dev_dependencies:
+#   melos: ^6.1.0

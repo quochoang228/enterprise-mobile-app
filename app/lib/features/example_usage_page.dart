@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:core/core.dart';
+import 'package:go_router/go_router.dart';
+import 'package:user_management/user_management.dart';
 import '../di/injection.dart';
+import 'user_example_page.dart';
 
 class ExampleUsagePage extends ConsumerWidget {
   const ExampleUsagePage({super.key});
@@ -14,7 +17,7 @@ class ExampleUsagePage extends ConsumerWidget {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: SingleChildScrollView(
-        child: const Padding(
+        child: Padding(
           padding: EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -26,6 +29,21 @@ class ExampleUsagePage extends ConsumerWidget {
               _PerformanceSection(),
               SizedBox(height: 20),
               _MemorySection(),
+
+              ElevatedButton(
+                    onPressed: () => context.push('/post'),
+                    child: const Text('Post Demo'),
+                  ),
+
+              // 🚀 Feature Modules
+              SizedBox(height: 30),
+              Text(
+                '🚀 Feature Modules',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 20),
+              _UserManagementSection(),
+             
             ],
           ),
         ),
@@ -269,5 +287,70 @@ class _MemorySection extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+
+class _UserManagementSection extends ConsumerWidget {
+  const _UserManagementSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentUserAsync = ref.watch(currentUserProvider);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '👤 User Management',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            const Text('User profile, authentication, and user data'),
+            const SizedBox(height: 12),
+            currentUserAsync.when(
+              data: (user) => user != null
+                ? Text('Current User: ${user.fullName}')
+                : const Text('No user logged in'),
+              loading: () => const CircularProgressIndicator(),
+              error: (error, stack) => Text('Error: $error'),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => _navigateToUserDemo(context),
+                    child: const Text('User Demo'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => _refreshUserData(ref),
+                    child: const Text('Refresh'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _navigateToUserDemo(BuildContext context) {
+    context.push('/profile');
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => const UserExamplePage()),
+    // );
+  }
+
+  void _refreshUserData(WidgetRef ref) {
+    ref.invalidate(currentUserProvider);
   }
 }

@@ -27,7 +27,7 @@ class UserRepositoryImpl implements UserRepository {
       return Left(NetworkFailure(e.message, code: e.code));
     } on CacheException catch (e) {
       return Left(CacheFailure(e.message, code: e.code));
-    } catch (e) {
+    } on Exception catch (e) {
       return Left(UnknownFailure(e.toString()));
     }
   }
@@ -49,7 +49,7 @@ class UserRepositoryImpl implements UserRepository {
       return Left(NetworkFailure(e.message, code: e.code));
     } on CacheException catch (e) {
       return Left(CacheFailure(e.message, code: e.code));
-    } catch (e) {
+    } on Exception catch (e) {
       return Left(UnknownFailure(e.toString()));
     }
   }
@@ -78,7 +78,7 @@ class UserRepositoryImpl implements UserRepository {
       return const Right(null);
     } on NetworkException catch (e) {
       return Left(NetworkFailure(e.message, code: e.code));
-    } catch (e) {
+    } on Exception catch (e) {
       return Left(UnknownFailure(e.toString()));
     }
   }
@@ -90,15 +90,13 @@ class UserRepositoryImpl implements UserRepository {
       return Right(users.map((user) => user.toEntity()).toList());
     } on NetworkException catch (e) {
       return Left(NetworkFailure(e.message, code: e.code));
-    } catch (e) {
+    } on Exception catch (e) {
       return Left(UnknownFailure(e.toString()));
     }
   }
 
   @override
-  Stream<User> watchUser(String id) {
-    return _localDataSource
+  Stream<User> watchUser(String id) => _localDataSource
         .watchUser(id)
         .map((userModel) => userModel.toEntity());
-  }
 }

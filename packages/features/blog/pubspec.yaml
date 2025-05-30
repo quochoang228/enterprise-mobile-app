@@ -1,0 +1,61 @@
+name: blog
+description: Blog feature module for enterprise mobile app
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+  flutter: ">=3.32.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Core dependencies
+  core:
+    path: ../../core
+  design_system:
+    path: ../../design_system
+    # State Management
+  flutter_riverpod: ^2.3.4
+  riverpod_annotation: ^2.1.1
+  
+  # Navigation
+  go_router: ^14.7.0
+  
+  # Dependency Injection
+  injectable: ^2.5.0
+  get_it: ^8.0.0
+  
+  # Functional Programming
+  dartz: ^0.10.1
+  
+  # JSON & Serialization
+  json_annotation: ^4.9.0
+  freezed_annotation: ^2.4.4
+    # Utilities
+  equatable: ^2.0.5
+  
+  # UI Components
+  cached_network_image: ^3.3.1
+  flutter_html: ^3.0.0-beta.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  
+  # Code Generation
+  build_runner: ^2.4.7
+  json_serializable: ^6.8.0
+  freezed: ^2.4.6
+  riverpod_generator: ^2.2.3
+  
+  # Testing
+  mockito: ^5.4.4
+  mocktail: ^1.0.3
+  
+  # Linting
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true

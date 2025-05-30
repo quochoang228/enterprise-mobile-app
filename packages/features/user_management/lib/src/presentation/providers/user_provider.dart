@@ -4,6 +4,19 @@ import '../../domain/usecases/get_current_user.dart';
 import '../../domain/usecases/get_user_by_id.dart';
 import '../../domain/usecases/update_user.dart';
 
+final currentUserProvider = FutureProvider<User?>((ref) async {
+  // Mock implementation - replace with real user management
+  await Future.delayed(const Duration(seconds: 1)); // Simulate loading
+  return User(
+    id: 'demo_user_123',
+    firstName: 'Demo',
+    lastName: 'User',
+    email: 'demo@example.com',
+    createdAt: DateTime.now(),
+    username: 'Demo User',
+  );
+});
+
 // Providers for use cases
 final getCurrentUserProvider = Provider<GetCurrentUser>((ref) {
   throw UnimplementedError('GetCurrentUser provider not configured');

@@ -17,6 +17,8 @@ dependencies:
     path: ../packages/design_system
   user_management:
     path: ../packages/features/user_management
+  blog:
+    path: ../packages/features/blog
   
   # Navigation
   go_router: ^14.2.7

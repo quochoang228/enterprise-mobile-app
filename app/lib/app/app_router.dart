@@ -1,6 +1,8 @@
+import 'package:blog/blog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:user_management/user_management.dart';
 import '../features/example_usage_page.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -10,8 +12,23 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/', builder: (context, state) => const ExampleUsagePage()),
       GoRoute(
         path: '/profile',
-        builder: (context, state) => const ProfilePage(),
+        builder: (context, state) => const UserProfilePage(),
       ),
+      // Blog routes
+      GoRoute(path: '/blog', builder: (context, state) => const BlogListPage()),
+      GoRoute(
+        path: '/blog/search',
+        builder: (context, state) => const BlogSearchPage(),
+      ),
+      GoRoute(
+        path: '/blog/post/:postId',
+        builder: (context, state) {
+          final postId = state.pathParameters['postId']!;
+          return BlogDetailPage(postId: postId);
+        },
+      ),
+      // Legacy route for backwards compatibility
+      GoRoute(path: '/post', builder: (context, state) => const BlogListPage()),
     ],
   );
 });
@@ -46,26 +63,6 @@ class HomePage extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        leading: IconButton(
-          onPressed: () => context.go('/'),
-          icon: const Icon(Icons.arrow_back),
-        ),
-      ),
-      body: const Center(
-        child: Text('User Profile Page', style: TextStyle(fontSize: 20)),
       ),
     );
   }
